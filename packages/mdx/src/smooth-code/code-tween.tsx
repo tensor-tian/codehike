@@ -1,21 +1,23 @@
-import React from "react"
-import { useDimensions, Dimensions } from "./use-dimensions"
 import {
-  FullTween,
   Code,
-  map,
   FocusString,
+  FullTween,
+  LinesString,
   anyValue,
+  map,
 } from "../utils"
 import {
-  useStepParser,
   CodeAnnotation,
   CodeShift,
+  useStepParser,
 } from "./partial-step-parser"
-import { SmoothLines } from "./smooth-lines"
-import { CopyButton } from "./copy-button"
+import { Dimensions, useDimensions } from "./use-dimensions"
+
 import { CodeExpandButton } from "mini-editor/expand-button"
 import { CodeSettings } from "../core/types"
+import { CopyButton } from "./copy-button"
+import React from "react"
+import { SmoothLines } from "./smooth-lines"
 
 type HTMLProps = React.DetailedHTMLProps<
   React.HTMLAttributes<HTMLDivElement>,
@@ -33,6 +35,7 @@ export type CodeTweenProps = {
 export type CodeStep = {
   code: Code
   focus: FocusString
+  lineNums: LinesString
   annotations?: CodeAnnotation[]
 }
 
@@ -44,6 +47,7 @@ function useCodeShift({
   return useStepParser({
     highlightedLines: map(tween, tween => tween.code.lines),
     focus: map(tween, tween => tween.focus),
+    lineNums: map(tween, tween => tween.lineNums),
     annotations: map(tween, tween => tween.annotations),
     lang: anyValue(tween, tween => tween?.code?.lang),
   })
@@ -61,7 +65,9 @@ export function CodeTween({
 
   const { element, dimensions } = useDimensions(
     stepInfo.code,
+    map(stepInfo.maxLineNumber, ln => ln),
     map(tween, tween => tween.focus),
+    map(tween, tween => tween.lineNums),
     config.minColumns || DEFAULT_MIN_COLUMNS,
     config.lineNumbers || false,
     config.rows as number | "focus",

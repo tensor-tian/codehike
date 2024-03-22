@@ -1,11 +1,12 @@
-import { highlight } from "./lighter"
-import { NodeInfo, splitChildren } from "./unist-utils"
-import { CodeStep } from "../smooth-code"
-import { getAnnotationsFromMetastring } from "./annotations.metastring"
 import { CodeNode, SuperNode } from "./nodes"
+import { NodeInfo, splitChildren } from "./unist-utils"
+
 import { CodeHikeConfig } from "./config"
-import { splitCodeAndAnnotations } from "./annotations.comments"
+import { CodeStep } from "../smooth-code"
 import { EditorStep } from "../core/types"
+import { getAnnotationsFromMetastring } from "./annotations.metastring"
+import { highlight } from "./lighter"
+import { splitCodeAndAnnotations } from "./annotations.comments"
 
 export function isEditorNode(
   node: SuperNode,
@@ -111,15 +112,20 @@ async function mapFile(
   const { theme } = config
 
   const lang = (node.lang as string) || "text"
+  const options = parseMetastring(
+    typeof node.meta === "string" ? node.meta : ""
+  )
 
   const {
     code,
     annotations: commentAnnotations,
     focus: commentFocus,
+    lineNums,
   } = await splitCodeAndAnnotations(
     node.value as string,
     lang,
-    config
+    config,
+    options.lineNums
   )
 
   let highlightedCode = await highlight({
@@ -128,9 +134,6 @@ async function mapFile(
     theme,
   })
 
-  const options = parseMetastring(
-    typeof node.meta === "string" ? node.meta : ""
-  )
   const metaAnnotations = getAnnotationsFromMetastring(
     options as any
   )
@@ -139,6 +142,7 @@ async function mapFile(
     ...options,
     code: highlightedCode,
     focus: mergeFocus(options.focus, commentFocus),
+    lineNums,
     name: options.name || "",
     annotations: [
       ...metaAnnotations,
@@ -155,6 +159,7 @@ function mergeFocus(fs1: string, fs2: string) {
 
 type FileOptions = {
   focus?: string
+  lineNums?: string
   active?: string
   hidden?: boolean
 }
@@ -175,5 +180,6 @@ function parseMetastring(
       ;(options as any)[key] = true
     }
   })
+
   return { name: name || "", ...options }
 }

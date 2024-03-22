@@ -14,11 +14,13 @@ export type LighterAnnotation = Annotation
 export async function extractLighterAnnotations(
   codeWithAnnotations: string,
   lang: string,
+  lineNums: string | undefined,
   annotationNames: string[]
 ) {
   return await extractAnnotations(
     codeWithAnnotations,
     warnIfUnknownLang(lang),
+    lineNums,
     annotationNames
   )
 }

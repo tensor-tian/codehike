@@ -45,6 +45,7 @@
   },
   "dependencies": {
     "@code-hike-local/lighter": "workspace:*",
+    "debug": "npm:@milahu/debug-esm@*",
     "node-fetch": "^2.0.0"
   },
   "devDependencies": {

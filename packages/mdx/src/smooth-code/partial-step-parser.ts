@@ -1,20 +1,23 @@
 import {
-  Tween,
   FocusString,
-  map,
   FullTween,
+  LinesString,
+  Tween,
+  getLineNumIndexes,
+  map,
   withDefault,
 } from "../utils"
-import { mergeLines } from "./differ"
-import { splitByFocus } from "./splitter"
+import {
+  annotateInline,
+  annotateMultiline,
+  parseAnnotations,
+} from "./annotations"
+
 import React from "react"
 import { TweenParams } from "./tween"
 import { getLinesWithElements } from "./line-elements"
-import {
-  parseAnnotations,
-  annotateInline,
-  annotateMultiline,
-} from "./annotations"
+import { mergeLines } from "./differ"
+import { splitByFocus } from "./splitter"
 
 export type AnnotationProps = {
   style?: React.CSSProperties
@@ -33,13 +36,14 @@ export type CodeAnnotation = {
 }
 type ParseInput = {
   focus: Tween<FocusString>
+  lineNums: Tween<LinesString>
   annotations?: Tween<CodeAnnotation[] | undefined>
   highlightedLines: FullTween<HighlightedLine[]>
   lang: string
 }
 
 export function useStepParser(input: ParseInput) {
-  const { highlightedLines, focus } = input
+  const { highlightedLines, focus, lineNums } = input
   return React.useMemo(
     () => parse(input),
     [
@@ -47,27 +51,57 @@ export function useStepParser(input: ParseInput) {
       highlightedLines.next,
       focus.prev,
       focus.next,
+      lineNums.prev,
+      lineNums.next,
     ]
   )
 }
+let mark = 0
 
 function parse({
   focus,
+  lineNums,
   annotations,
   highlightedLines,
   lang,
 }: ParseInput) {
   const normalCode = getCode(highlightedLines)
 
-  const mergedCode = merge(normalCode, highlightedLines)
+  const lineNumsFullTween = {
+    prev: lineNums.prev ?? `1:${normalCode.prev.length}`,
+    next: lineNums.next ?? `1:${normalCode.next.length}`,
+  }
+
+  const indexToLineNumberMap = map(
+    lineNumsFullTween,
+    getLineNumIndexes
+  )
+  const lineNumberToIndexMap = map(
+    indexToLineNumberMap,
+    mp =>
+      mp.reduce(
+        (acc, ln, index) => acc.set(ln, index),
+        new Map<number, number>()
+      )
+  )
+
+  const mergedCode = merge(
+    normalCode,
+    highlightedLines,
+    indexToLineNumberMap
+  )
 
   const { inlineAnnotations, multilineAnnotations } =
     parseAllAnnotations(annotations)
 
+  const maxLineNumber = map(indexToLineNumberMap, mp =>
+    Math.max(10, mp[mp.length - 1])
+  )
   const focusedCode = splitLinesByFocus(
     mergedCode,
     withDefault(focus, null),
-    inlineAnnotations
+    inlineAnnotations,
+    lineNumberToIndexMap
   )
 
   const annotatedCode = addAnnotations(
@@ -79,10 +113,10 @@ function parse({
   const codeStep = addExtraStuff(
     annotatedCode,
     normalCode,
+    lineNumberToIndexMap,
+    maxLineNumber,
     lang
   )
-
-  // console.log({ codeStep })
 
   return codeStep
 }
@@ -132,9 +166,10 @@ export interface MergedCode {
 
 function merge(
   code: FullTween<string>,
-  highlightedLines: FullTween<HighlightedLine[]>
+  highlightedLines: FullTween<HighlightedLine[]>,
+  lineNumbersMap: FullTween<number[]>
 ): MergedCode {
-  return mergeLines(code, highlightedLines)
+  return mergeLines(code, highlightedLines, lineNumbersMap)
 }
 
 // 3 - parse annotationss
@@ -199,9 +234,15 @@ function splitLinesByFocus(
   focus: FullTween<FocusString>,
   annotations: FullTween<
     Record<number, InlineAnnotation[] | undefined>
-  >
+  >,
+  lineNumberToIndexMap: FullTween<Map<number, number>>
 ): FocusedCode {
-  return splitByFocus(mergedCode, focus, annotations)
+  return splitByFocus(
+    mergedCode,
+    focus,
+    annotations,
+    lineNumberToIndexMap
+  )
 }
 
 // 5 - add annotations
@@ -275,6 +316,7 @@ export type CodeShift = {
   lastFocusedLineNumber: FullTween<number>
   verticalInterval: [number, number]
   lineCount: FullTween<number>
+  maxLineNumber: FullTween<number>
   code: FullTween<string>
   lang: string
 }
@@ -282,6 +324,8 @@ export type CodeShift = {
 function addExtraStuff(
   codeStep: AnnotatedCode,
   code: FullTween<string>,
+  lineNumberToIndexMap: FullTween<Map<number, number>>,
+  maxLineNumber: FullTween<number>,
   lang: string
 ): CodeShift {
   const vInterval = verticalInterval(
@@ -294,6 +338,7 @@ function addExtraStuff(
       ...group,
       lines: getLinesWithElements(
         group.lines,
+        lineNumberToIndexMap,
         vInterval,
         codeStep.enterCount,
         codeStep.exitCount
@@ -306,6 +351,7 @@ function addExtraStuff(
     groups: newGroups,
     verticalInterval: vInterval,
     code,
+    maxLineNumber,
     lang,
   }
 }

@@ -1,12 +1,13 @@
-import React from "react"
-import { Dimensions } from "./use-dimensions"
 import {
-  CodeShift,
   AnnotatedTokenGroups,
+  CodeShift,
 } from "./partial-step-parser"
+import { FullTween, Tween } from "../utils"
+
+import { Dimensions } from "./use-dimensions"
+import React from "react"
 import { SmoothContainer } from "./smooth-container"
 import { tween } from "./tween"
-import { FullTween, Tween } from "../utils"
 
 type SmoothLinesProps = {
   progress: number

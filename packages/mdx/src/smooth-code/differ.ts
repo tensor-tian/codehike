@@ -1,4 +1,3 @@
-import { diffLines } from "diff"
 import { FullTween, Tween } from "../utils"
 import {
   HighlightedLine,
@@ -6,9 +5,12 @@ import {
   MergedLine,
 } from "./partial-step-parser"
 
+import { diffLines } from "diff"
+
 export function mergeLines(
   code: FullTween<string>,
-  lines: FullTween<HighlightedLine[]>
+  lines: FullTween<HighlightedLine[]>,
+  lineNumbersMap: FullTween<number[]>
 ): MergedCode {
   let enterIndex = 0
   let exitIndex = 0
@@ -18,7 +20,7 @@ export function mergeLines(
       return {
         ...lines.prev[index.prev!],
         lineNumber: {
-          prev: index.prev! + 1,
+          prev: lineNumbersMap.prev[index.prev!],
         },
         move: "exit",
         enterIndex: null,
@@ -29,7 +31,7 @@ export function mergeLines(
       return {
         ...lines.next[index.next!],
         lineNumber: {
-          next: index.next! + 1,
+          next: lineNumbersMap.next[index.next!],
         },
         move: "enter",
         enterIndex: enterIndex++,
@@ -39,8 +41,8 @@ export function mergeLines(
     return {
       ...lines.prev[index.prev!],
       lineNumber: {
-        prev: index.prev! + 1,
-        next: index.next! + 1,
+        prev: lineNumbersMap.prev[index.prev!],
+        next: lineNumbersMap.next[index.next!],
       },
       move: "stay",
       enterIndex: null,

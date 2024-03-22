@@ -1,9 +1,10 @@
-import { CodeAnnotation } from "smooth-code"
 import {
   LighterAnnotation,
   extractLighterAnnotations,
   parseLighterAnnotations,
 } from "./lighter"
+
+import { CodeAnnotation } from "smooth-code"
 import { annotationsMap } from "../mdx-client/annotations"
 
 const annotationNames = Object.keys(annotationsMap)
@@ -11,19 +12,24 @@ const annotationNames = Object.keys(annotationsMap)
 export async function splitCodeAndAnnotations(
   rawCode: string,
   lang: string,
-  config: { filepath?: string; autoLink?: boolean }
+  config: { filepath?: string; autoLink?: boolean },
+  lineNums: string | undefined
 ): Promise<{
   code: string
   annotations: CodeAnnotation[]
   focus: string
+  lineNums: string
 }> {
-  let { code, annotations } =
-    await extractLighterAnnotations(rawCode, lang, [
-      ...annotationNames,
-      "from",
-      "focus",
-    ])
-
+  let {
+    code,
+    annotations,
+    lineNums: newLineNums,
+  } = await extractLighterAnnotations(
+    rawCode,
+    lang,
+    lineNums,
+    [...annotationNames, "from", "focus"]
+  )
   // import external code if needed and re-run annotations extraction
   const fromAnnotations = annotations.filter(
     a => a.name === "from"
@@ -40,10 +46,12 @@ export async function splitCodeAndAnnotations(
     const result = await extractLighterAnnotations(
       externalFileContent,
       lang,
+      range,
       [...annotationNames, "focus"]
     )
     code = result.code
     annotations = result.annotations
+    newLineNums = result.lineNums
   }
 
   if (config.autoLink) {
@@ -51,7 +59,11 @@ export async function splitCodeAndAnnotations(
     annotations = [...annotations, ...autoLinkAnnotations]
   }
 
-  return { code, ...parseLighterAnnotations(annotations) }
+  return {
+    code,
+    ...parseLighterAnnotations(annotations),
+    lineNums: newLineNums,
+  }
 }
 
 async function readFile(

@@ -18,7 +18,8 @@
     "esModuleInterop": true,
     "paths": {
       "@": ["./"],
-      "*": ["src/*", "node_modules/*"]
+      "*": ["src/*", "node_modules/*"],
+      "react": ["node_modules/@types/react"]
     },
     "downlevelIteration": true,
     "resolveJsonModule": true,

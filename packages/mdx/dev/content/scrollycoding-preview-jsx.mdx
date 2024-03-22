@@ -84,7 +84,7 @@ const vax = 3
 
 ### Step 3
 
-To set up Code Hike you need to [import the <CH.InlineCode>@code-hike/mdx</CH.InlineCode> plugin](focus://1,6[1:6]), and add it to the remarkPlugins array in the next.config.js file.
+To set up Code Hike you need to [import the <CH.InlineCode>@code-hike-local/mdx</CH.InlineCode> plugin](focus://1,6[1:6]), and add it to the remarkPlugins array in the next.config.js file.
 
 You will also want to import a theme. You can import one from lighter, or make a custom one.
 
@@ -133,7 +133,7 @@ If you want to customize Code Hike's styles with a global stylesheet make sure t
 
 {/* prettier-ignore */}
 ```js pages/_app.js focus=1 active
-import "@code-hike/mdx/dist/index.css"
+import "@code-hike-local/mdx/dist/index.css"
 
 function MyApp({ Component, pageProps }) {
   return <Component {...pageProps} />

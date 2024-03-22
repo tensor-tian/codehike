@@ -1,14 +1,15 @@
-import React from "react"
 import {
   EditorFrame,
   EditorFrameProps,
 } from "./editor-frame"
-import { TerminalPanel } from "./terminal-panel"
-import { useTransition, EditorStep } from "./editor-shift"
-import { useLayoutEffect } from "../utils"
+import { EditorStep, useTransition } from "./editor-shift"
+
+import { CodeSettings } from "../core/types"
 import { CopyButton } from "smooth-code/copy-button"
 import { EditorExpandButton } from "mini-editor/expand-button"
-import { CodeSettings } from "../core/types"
+import React from "react"
+import { TerminalPanel } from "./terminal-panel"
+import { useLayoutEffect } from "../utils"
 
 export { EditorTransition, EditorTween }
 export type { EditorTransitionProps, EditorTweenProps }
@@ -39,6 +40,7 @@ const DEFAULT_STEP: EditorStep = {
     {
       code: { lines: [], lang: "js" },
       focus: "",
+      lineNums: "",
       name: "",
     },
   ],

@@ -1,22 +1,23 @@
 import {
-  Tween,
-  FullTween,
-  map,
-  FocusString,
-  mapFocusToLineNumbers,
-  ColumnExtremes,
-} from "../utils"
-import {
-  MergedCode,
+  AnnotatedLine,
   FocusedCode,
   FocusedLine,
-  MergedLine,
-  TokenGroup,
-  LineGroup,
-  AnnotatedLine,
-  MultiLineAnnotation,
   InlineAnnotation,
+  LineGroup,
+  MergedCode,
+  MergedLine,
+  MultiLineAnnotation,
+  TokenGroup,
 } from "./partial-step-parser"
+import {
+  ColumnExtremes,
+  FocusString,
+  FullTween,
+  Tween,
+  map,
+  mapFocusToLineNumbers,
+} from "../utils"
+
 import React from "react"
 
 export function splitByAnnotations(
@@ -86,7 +87,8 @@ export function splitByFocus(
   focus: FullTween<FocusString>,
   annotations: FullTween<
     Record<number, InlineAnnotation[] | undefined>
-  >
+  >,
+  lineNumberToIndexMap: FullTween<Map<number, number>>
 ): FocusedCode {
   const { lines, ...mergedCodeRest } = mergedCode
 
@@ -98,7 +100,16 @@ export function splitByFocus(
         ? lines.filter(l => l.move !== "enter")
         : lines.filter(l => l.move !== "exit")
 
-    return mapFocusToLineNumbers(focus, stepLines)
+    return Object.fromEntries(
+      Object.entries(
+        mapFocusToLineNumbers(focus, stepLines)
+      ).filter(
+        ([lineNumber]) =>
+          typeof lineNumberToIndexMap[key].get(
+            Number(lineNumber)
+          ) === "number"
+      )
+    )
   })
 
   const splittedLines = lines.map(line => {
@@ -135,8 +146,10 @@ export function splitByFocus(
 
   const focusedLineNumbers = map(
     focusByLineNumber,
-    focusByLineNumber =>
-      Object.keys(focusByLineNumber).map(k => Number(k))
+    (focusByLineNumber, key) =>
+      Object.keys(focusByLineNumber).map(k =>
+        lineNumberToIndexMap[key].get(Number(k))
+      )
   )
 
   const firstFocusedLineNumber = map(

@@ -1,25 +1,26 @@
+import { CodeFile, EditorStep } from "./editor-shift"
+
+import { CodeSettings } from "../core/types"
+import { EditorFrameProps } from "./editor-frame"
+import { EditorTween } from "./editor-tween"
 import React from "react"
 import { useSpring } from "use-spring"
-import { EditorTween } from "./editor-tween"
-import { EditorFrameProps } from "./editor-frame"
-import { EditorStep, CodeFile } from "./editor-shift"
-import { CodeSettings } from "../core/types"
 
 export { EditorSpring }
 export type { EditorProps, EditorStep, CodeFile }
 
-type SpringConfig = Parameters<typeof useSpring>[1]
-
 type DivProps = React.PropsWithoutRef<
   JSX.IntrinsicElements["div"]
 >
+type SpringConfig = Parameters<typeof useSpring>[1]
 
-const defaultSpring = {
+const defaultSpring: SpringConfig = {
   stiffness: 120,
   damping: 24,
   mass: 0.2,
   decimals: 3,
 }
+
 type EditorProps = EditorStep & {
   frameProps?: Partial<EditorFrameProps>
   codeConfig: CodeSettings

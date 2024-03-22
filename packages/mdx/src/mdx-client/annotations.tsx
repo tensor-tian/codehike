@@ -1,11 +1,12 @@
-import React from "react"
-import { CodeAnnotation } from "../smooth-code"
-import { transparent } from "../utils"
 import {
   AnnotationProps,
   LineWithElement,
 } from "../smooth-code/partial-step-parser"
+
+import { CodeAnnotation } from "../smooth-code"
 import { CopyButton } from "../smooth-code/copy-button"
+import React from "react"
+import { transparent } from "../utils"
 
 export function Annotation() {
   return (

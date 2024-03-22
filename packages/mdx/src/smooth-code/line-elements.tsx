@@ -1,12 +1,13 @@
 import {
-  LineWithElement,
   AnnotatedLine,
+  LineWithElement,
 } from "./partial-step-parser"
-import { map } from "../utils"
+import { FullTween, map } from "../utils"
 import { easing, stagger } from "./tween"
 
 export function getLinesWithElements(
   lines: AnnotatedLine[],
+  lineNumberToIndexMap: FullTween<Map<number, number>>,
   verticalInterval: [number, number],
   enterCount: number,
   exitCount: number
@@ -18,7 +19,7 @@ export function getLinesWithElements(
   return lines.map(line => {
     const lineIndex = map(
       line.lineNumber,
-      ln => ln && ln - 1
+      (ln, key) => ln && lineNumberToIndexMap[key].get(ln)
     )
 
     const { enterIndex, exitIndex } = line

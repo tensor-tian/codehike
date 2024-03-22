@@ -4,6 +4,7 @@ type LineNumber = number
 type ColumnNumber = number
 
 export type FocusString = string | null | undefined
+export type LinesString = string | null | undefined
 
 /**
  * Start 2 and end 4 means for the line "lorem"
@@ -32,6 +33,30 @@ export function mapFocusToLineNumbers(
       splitParts(focus).map(parsePartToObject)
     )
   }
+}
+
+export function getLineNumIndexes(lineNums: string) {
+  const ranges = lineNums
+    .split(",")
+    .map(part => {
+      const linesMatch = part.match(/(\d+)(:(\d+))?/)
+      if (linesMatch) {
+        const from = Number(linesMatch[1])
+        const to = linesMatch[3]
+          ? Number(linesMatch[3])
+          : from
+        return [from, to]
+      }
+      return []
+    })
+    .filter(range => range.length === 2)
+    .sort((a, b) => a[0] - b[0])
+  return ranges.reduce((acc, [from, to]) => {
+    for (let j = from; j <= to; j++) {
+      acc.push(j)
+    }
+    return acc
+  }, [] as number[])
 }
 
 export function splitParts(focus: string) {
@@ -125,11 +150,13 @@ export function getFocusIndexes(
   lines: any[]
 ): number[] {
   if (!focus) {
-    return [...lines.keys()]
+    return [...lines.keys()].map(
+      lineNumber => lineNumber + 1
+    )
   } else {
     const parsed = parseFocus(focus)
-    const focusedIndexes = Object.keys(parsed).map(i =>
-      parseInt(i, 10)
+    const focusedIndexes = Object.keys(parsed).map(
+      i => parseInt(i, 10) + 1
     )
     return focusedIndexes
   }

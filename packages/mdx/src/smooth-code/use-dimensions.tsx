@@ -1,11 +1,14 @@
-import React from "react"
 import {
   FocusString,
+  LinesString,
+  Tween,
   getFocusExtremes,
   getFocusIndexes,
-  Tween,
+  getLineNumIndexes,
   useLayoutEffect,
 } from "../utils"
+
+import React from "react"
 
 type Dimensions = {
   containerWidth: number
@@ -36,7 +39,9 @@ const DEFAULT_WIDTH = 200
 
 function useDimensions(
   code: Tween<string>,
+  maxLineNumber: Tween<number>,
   focus: Tween<FocusString>,
+  lineNums: Tween<LinesString>,
   minColumns: number,
   lineNumbers: boolean,
   rows: number | "focus" | undefined,
@@ -56,18 +61,22 @@ function useDimensions(
     React.useMemo(() => {
       const prevLongestLine = getLongestLine(
         code.prev,
-        focus.prev
+        focus.prev,
+        lineNums.prev
       )
       const nextLongestLine = getLongestLine(
         code.next,
-        focus.next
+        focus.next,
+        lineNums.next
       )
 
       const lines = (code.prev || code.next!)
         .trimEnd()
         .split(newlineRe)
-
-      const largestLineNumber = Math.max(lines.length, 10)
+      const largestLineNumber = Math.max(
+        maxLineNumber.prev || maxLineNumber.next!,
+        10
+      )
 
       if (rows) {
         // make the lines match the requested number of rows
@@ -131,7 +140,7 @@ function useDimensions(
         </code>
       )
       return { prevLongestLine, nextLongestLine, element }
-    }, [code])
+    }, [code, maxLineNumber, focus, lineNums])
 
   const allDeps = [
     ...deps,
@@ -168,6 +177,7 @@ function useDimensions(
         ":scope > div"
       ) as HTMLElement
 
+      console.log("lineContentDiv:", lineContentDiv)
       const lineNumberSpan = pll?.querySelector(
         ":scope > span"
       ) as HTMLElement
@@ -231,14 +241,23 @@ function useDimensions(
 const newlineRe = /\r\n|\r|\n/
 function getLongestLine(
   code: string | undefined,
-  focus: FocusString
+  focus: FocusString,
+  lineNums: LinesString
 ): string {
   const lines = code ? code.split(newlineRe) : [""]
   const focusIndexes = getFocusIndexes(focus, lines)
+  const lineNumIndexes = getLineNumIndexes(lineNums)
+  console.log("getLongestLine:", {
+    lines,
+    focus,
+    focusIndexes,
+    lineNums,
+    lineNumIndexes,
+  })
   let longestLine = ""
   lines.forEach((line, index) => {
     if (
-      focusIndexes.includes(index) &&
+      focusIndexes.includes(lineNumIndexes[index]) &&
       line.length > longestLine.length
     ) {
       longestLine = line
