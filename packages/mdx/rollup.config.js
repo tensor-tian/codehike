@@ -1,17 +1,16 @@
 import autoprefixer from "autoprefixer"
-import postcss from "rollup-plugin-postcss"
-
-import cssnano from "cssnano"
-import typescript from "rollup-plugin-typescript2"
-// import copy from "rollup-plugin-copy"
-import path from "path"
-import json from "@rollup/plugin-json"
-import del from "rollup-plugin-delete"
-import dts from "rollup-plugin-dts"
-import { nodeResolve } from "@rollup/plugin-node-resolve"
+import banner2 from "rollup-plugin-banner2"
 // import { terser } from "rollup-plugin-terser"
 import commonjs from "@rollup/plugin-commonjs"
-import banner2 from "rollup-plugin-banner2"
+import cssnano from "cssnano"
+import del from "rollup-plugin-delete"
+import dts from "rollup-plugin-dts"
+import json from "@rollup/plugin-json"
+import { nodeResolve } from "@rollup/plugin-node-resolve"
+// import copy from "rollup-plugin-copy"
+import path from "path"
+import postcss from "rollup-plugin-postcss"
+import typescript from "rollup-plugin-typescript2"
 
 const clientExternal = [
   "react",
@@ -22,7 +21,7 @@ const clientExternal = [
 ]
 const remarkExternal = [
   // "hast-util-to-estree",
-  "@code-hike/lighter",
+  "@code-hike-local/lighter",
   // "is-plain-obj",
   "node-fetch",
   // "remark-rehype",

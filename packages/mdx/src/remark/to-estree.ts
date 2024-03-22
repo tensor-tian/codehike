@@ -1,10 +1,10 @@
 import { Expression } from "estree"
-import isPlainObject from "is-plain-obj"
+import { Node } from "unist"
 import { annotationsMap } from "../mdx-client/annotations"
+import isPlainObject from "is-plain-obj"
 // import unified from "unified"
 // import remarkRehype from "remark-rehype"
 import toEstree from "hast-util-to-estree"
-import { Node } from "unist"
 
 // forked from https://github.com/remcohaszing/estree-util-value-to-estree/blob/main/src/index.ts
 
@@ -92,11 +92,9 @@ export function valueToEstree(
     ) {
       return {
         type: "CallExpression",
-        optional: false,
         callee: {
           type: "MemberExpression",
           computed: false,
-          optional: false,
           object: { type: "Identifier", name: "Symbol" },
           property: { type: "Identifier", name: "for" },
         },
@@ -233,14 +231,12 @@ export function valueToEstree(
           name: "annotations",
         },
         computed: false,
-        optional: false,
       },
       property: {
         type: "Identifier",
         name: identifier,
       },
       computed: false,
-      optional: false,
     }
   }
 

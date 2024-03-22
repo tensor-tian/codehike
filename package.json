@@ -1,12 +1,10 @@
 {
   "private": true,
-  "workspaces": {
-    "packages": [
-      "packages/mdx",
-      "playground",
-      "site"
-    ]
-  },
+  "workspaces": [
+    "packages/mdx",
+    "playground",
+    "site"
+  ],
   "scripts": {
     "build": "lerna run --stream build",
     "build:lib": "lerna run --stream --scope @*/mdx build",

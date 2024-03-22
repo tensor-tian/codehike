@@ -1,10 +1,12 @@
-import { getCode, getFiles } from "../dev/files"
 import * as runtime from "react/jsx-runtime"
-import { runSync } from "@mdx-js/mdx"
+
+import { getCode, getFiles } from "../dev/files"
+
 import { CH } from "../src/components"
 import { Layout } from "../dev/layout"
 import React from "react"
-import { THEME_NAMES } from "@code-hike/lighter"
+import { THEME_NAMES } from "@code-hike-local/lighter"
+import { runSync } from "@mdx-js/mdx"
 
 const mdx = `
 

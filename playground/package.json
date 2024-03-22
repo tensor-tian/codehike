@@ -8,7 +8,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@code-hike/mdx": "^0.9.0",
+    "@code-hike-local/mdx": "^0.9.0",
     "@mdx-js/mdx": "^2.1.1",
     "@monaco-editor/react": "^4.4.5",
     "lz-string": "^1.4.4",

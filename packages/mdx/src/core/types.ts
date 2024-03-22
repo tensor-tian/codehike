@@ -1,5 +1,5 @@
-import type { Theme } from "@code-hike/lighter"
 import type { CodeStep } from "../smooth-code"
+import type { Theme } from "@code-hike-local/lighter"
 
 type TriggerPosition = `${number}px` | `${number}%`
 

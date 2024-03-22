@@ -1,19 +1,18 @@
+import { CodeHikeConfig, addConfigDefaults } from "./config"
+import { JsxNode, SuperNode, visit } from "./nodes"
+
+import { CH_CODE_CONFIG_VAR_NAME } from "./unist-utils"
+import type { Node } from "unist"
+import { getThemeColors } from "@code-hike-local/lighter"
+import { toGlobalConfig } from "core/types"
 import { transformCodes } from "./transform.code"
-import { transformSections } from "./transform.section"
-import { transformSpotlights } from "./transform.spotlight"
-import { transformScrollycodings } from "./transform.scrollycoding"
-import { transformSlideshows } from "./transform.slideshow"
 import { transformInlineCodes } from "./transform.inline-code"
 import { transformPreviews } from "./transform.preview"
-
+import { transformScrollycodings } from "./transform.scrollycoding"
+import { transformSections } from "./transform.section"
+import { transformSlideshows } from "./transform.slideshow"
+import { transformSpotlights } from "./transform.spotlight"
 import { valueToEstree } from "./to-estree"
-import { CH_CODE_CONFIG_VAR_NAME } from "./unist-utils"
-import { JsxNode, SuperNode, visit } from "./nodes"
-import { addConfigDefaults, CodeHikeConfig } from "./config"
-
-import type { Node } from "unist"
-import { getThemeColors } from "@code-hike/lighter"
-import { toGlobalConfig } from "core/types"
 
 const transforms = [
   transformPreviews,
@@ -317,7 +316,7 @@ function addSmartImport(
     type: "mdxjsEsm",
     value: `import { ${specifiers.join(
       ", "
-    )} } from "@code-hike/mdx/dist/components.cjs.js"`,
+    )} } from "@code-hike-local/mdx/dist/components.cjs.js"`,
     data: {
       estree: {
         type: "Program",
@@ -339,8 +338,8 @@ function addSmartImport(
             source: {
               type: "Literal",
               value:
-                "@code-hike/mdx/dist/components.cjs.js",
-              raw: '"@code-hike/mdx/dist/components.cjs.js"',
+                "@code-hike-local/mdx/dist/components.cjs.js",
+              raw: '"@code-hike-local/mdx/dist/components.cjs.js"',
             },
           },
         ],

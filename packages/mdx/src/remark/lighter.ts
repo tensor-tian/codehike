@@ -1,9 +1,10 @@
 import {
-  highlight as light,
-  extractAnnotations,
   Annotation,
   LANG_NAMES,
-} from "@code-hike/lighter"
+  extractAnnotations,
+  highlight as light,
+} from "@code-hike-local/lighter"
+
 import { Code } from "../utils"
 import { CodeAnnotation } from "../smooth-code"
 import { annotationsMap } from "../mdx-client/annotations"
