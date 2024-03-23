@@ -1,9 +1,7 @@
 {
   "private": true,
   "workspaces": [
-    "packages/mdx",
-    "playground",
-    "site"
+    "packages/mdx"
   ],
   "scripts": {
     "build": "lerna run --stream build",
