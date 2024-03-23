@@ -247,13 +247,13 @@ function getLongestLine(
   const lines = code ? code.split(newlineRe) : [""]
   const focusIndexes = getFocusIndexes(focus, lines)
   const lineNumIndexes = getLineNumIndexes(lineNums)
-  console.log("getLongestLine:", {
-    lines,
-    focus,
-    focusIndexes,
-    lineNums,
-    lineNumIndexes,
-  })
+  // console.log("getLongestLine:", {
+  //   lines,
+  //   focus,
+  //   focusIndexes,
+  //   lineNums,
+  //   lineNumIndexes,
+  // })
   let longestLine = ""
   lines.forEach((line, index) => {
     if (

@@ -1,4 +1,4 @@
-import { EditorStep, CodeFile } from "../mini-editor"
+import { CodeFile, EditorStep } from "../mini-editor"
 
 // extend steps with info from previous steps
 
@@ -92,7 +92,11 @@ function reduceFiles(
     // but if the new file is empty, keep the old content
     const { code, ...rest } = newFile
     if (isEmpty(code)) {
-      filesMap[newFile.name] = { ...prevFile, ...rest }
+      filesMap[newFile.name] = {
+        ...prevFile,
+        ...rest,
+        lineNums: prevFile.lineNums,
+      }
     } else {
       filesMap[newFile.name] = newFile
     }
