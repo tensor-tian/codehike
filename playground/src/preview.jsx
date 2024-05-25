@@ -1,10 +1,13 @@
-import React, { useRef, useEffect, useState } from "react";
-import * as runtime from "react/jsx-runtime";
-import { compile, run } from "@mdx-js/mdx";
-import { remarkCodeHike } from "@code-hike/mdx";
-import { CH } from "@code-hike/mdx/components";
 import "@code-hike/mdx/styles.css";
+
+import * as runtime from "react/jsx-runtime";
+
+import React, { useEffect, useRef, useState } from "react";
+import { compile, run } from "@mdx-js/mdx";
+
+import { CH } from "@code-hike/mdx/components";
 import { ErrorBoundary } from "react-error-boundary";
+import { remarkCodeHike } from "@code-hike/mdx";
 import { toHash } from "./hash";
 
 export function Preview(props) {
