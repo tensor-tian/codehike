@@ -3,6 +3,13 @@ import type { Theme } from "@code-hike-local/lighter"
 
 type TriggerPosition = `${number}px` | `${number}%`
 
+declare global {
+  function postMessageToCodeNoteEditor(
+    action: string,
+    payload: any
+  ): void
+}
+
 export type RemarkConfig = {
   // remark only
   theme: Theme
@@ -70,6 +77,7 @@ export type CodeSettings = {
 }
 
 export type ElementProps = {
+  id?: string
   style?: React.CSSProperties
   className?: string
 }

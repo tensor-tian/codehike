@@ -1,4 +1,4 @@
-import React from "react"
+import React, { MutableRefObject } from "react"
 import { debugEntries } from "./debugger"
 import { useWindowHeight } from "./use-window-height"
 
@@ -22,6 +22,8 @@ type ScrollerProps = {
   ) => string
   triggerPosition?: TriggerPosition
   debug?: boolean
+  height?: number
+  rootRef: MutableRefObject<HTMLElement>
 }
 
 type StepElement = {
@@ -34,12 +36,15 @@ function Scroller({
   getRootMargin = defaultRootMargin,
   triggerPosition,
   debug = false,
+  height,
+  rootRef,
 }: ScrollerProps) {
   const [observer, setObserver] =
     React.useState<IntersectionObserver>()
-  const vh = useWindowHeight()
+  const vh = height ?? useWindowHeight()
 
   useLayoutEffect(() => {
+    if (!rootRef.current) return () => {}
     const windowHeight = vh || 0
     const handleIntersect: IntersectionObserverCallback =
       entries => {
@@ -56,12 +61,13 @@ function Scroller({
       }
     const observer = newIntersectionObserver(
       handleIntersect,
-      getRootMargin(windowHeight, triggerPosition)
+      getRootMargin(windowHeight, triggerPosition),
+      rootRef.current
     )
     setObserver(observer)
 
     return () => observer.disconnect()
-  }, [vh])
+  }, [vh, rootRef.current])
 
   return (
     <ObserverContext.Provider value={observer}>
@@ -100,12 +106,13 @@ function Step({
 
 function newIntersectionObserver(
   handleIntersect: IntersectionObserverCallback,
-  rootMargin: string
+  rootMargin: string,
+  root: HTMLElement
 ) {
   return new IntersectionObserver(handleIntersect, {
     rootMargin,
     threshold: 0.000001,
-    root: null,
+    root,
   })
 }
 

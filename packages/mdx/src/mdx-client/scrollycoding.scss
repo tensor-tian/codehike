@@ -3,6 +3,7 @@
   position: relative;
   margin: 1rem 0;
   gap: 1rem;
+  overflow-y: auto;
 }
 
 .ch-scrollycoding-content {
@@ -34,7 +35,7 @@
 
 .ch-scrollycoding-sticker {
   position: sticky;
-  top: 10vh;
+  top: 10px;
   display: flex;
   align-self: start;
   flex-flow: column;
