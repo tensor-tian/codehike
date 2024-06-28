@@ -23,7 +23,6 @@ type ScrollerProps = {
   triggerPosition?: TriggerPosition
   debug?: boolean
   height?: number
-  rootRef: MutableRefObject<HTMLElement>
 }
 
 type StepElement = {
@@ -37,14 +36,12 @@ function Scroller({
   triggerPosition,
   debug = false,
   height,
-  rootRef,
 }: ScrollerProps) {
   const [observer, setObserver] =
     React.useState<IntersectionObserver>()
   const vh = height ?? useWindowHeight()
 
   useLayoutEffect(() => {
-    if (!rootRef.current) return () => {}
     const windowHeight = vh || 0
     const handleIntersect: IntersectionObserverCallback =
       entries => {
@@ -62,12 +59,12 @@ function Scroller({
     const observer = newIntersectionObserver(
       handleIntersect,
       getRootMargin(windowHeight, triggerPosition),
-      rootRef.current
+      null
     )
     setObserver(observer)
 
     return () => observer.disconnect()
-  }, [vh, rootRef.current])
+  }, [vh])
 
   return (
     <ObserverContext.Provider value={observer}>

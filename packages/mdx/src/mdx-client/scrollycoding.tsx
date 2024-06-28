@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useCallback, useMemo } from "react"
 import { EditorStep } from "../mini-editor"
 import { InnerCode, updateEditorStep } from "./code"
 import { Scroller, Step as ScrollerStep } from "../scroller"
@@ -189,10 +189,13 @@ function DynamicScrollycoding({
   const tab = state.step
 
   function onStepChange(index: number) {
-    postMessageToCodeNoteEditor("on-scrolly-step-change", {
-      id,
-      stepIndex: index,
-    })
+    window.postMessageToCodeNoteEditor?.(
+      "on-scrolly-step-change",
+      {
+        id,
+        stepIndex: index,
+      }
+    )
     setState({ stepIndex: index, step: editorSteps[index] })
   }
 
@@ -224,56 +227,59 @@ function DynamicScrollycoding({
     setState({ ...state, stepIndex, step: newStep })
   }
 
-  const ref = useRef<HTMLDivElement>(null)
-  const { height: codeHeight = 300 } = useResizeObserver({
-    ref,
-    box: "border-box",
-  })
-  const height = Math.max(500, codeHeight + 20)
-  const containerRef = useRef<HTMLElement>(null)
-
+  const ref = React.useRef<HTMLDivElement>(null)
+  const height = 800 // TODO: dynamic height
+  const stickerStyle = height
+    ? {
+        height: height * 0.8,
+        top: height * 0.1,
+      }
+    : {}
   return (
     <section
       className={`ch-scrollycoding ${
         withPreview ? "ch-scrollycoding-with-preview" : ""
       } ${className || ""}`}
-      style={{ ...style, height }}
+      style={{ ...style }}
       data-ch-theme={globalConfig?.themeName}
-      ref={containerRef}
     >
-      <div className="ch-scrollycoding-content">
+      <div className="ch-scrollycoding-content ignore-activate">
         <Scroller
           onStepChange={onStepChangeByScroller}
           triggerPosition={globalConfig?.triggerPosition}
           height={height}
-          rootRef={containerRef}
         >
-          {stepsChildren.map((children, i) => (
-            <ScrollerStep
-              as="div"
-              key={i}
-              index={i}
-              onClick={() => onStepChange(i)}
-              className="ch-scrollycoding-step-content"
-              data-selected={
-                i === state.stepIndex ? "true" : undefined
-              }
-            >
-              <LinkableSection
-                onActivation={({ fileName, focus }) => {
-                  onLinkActivation(i, fileName, focus)
-                }}
-                onReset={() => {
-                  onStepChange(i)
-                }}
+          {stepsChildren.map((children, i) => {
+            const cb = () => onStepChange(i)
+            return (
+              <ScrollerStep
+                as="div"
+                key={i}
+                index={i}
+                onClick={cb}
+                className="ch-scrollycoding-step-content"
+                data-selected={
+                  i === state.stepIndex ? "true" : undefined
+                }
               >
-                {children}
-              </LinkableSection>
-            </ScrollerStep>
-          ))}
+                <LinkableSection
+                  onActivation={({ fileName, focus }) => {
+                    onLinkActivation(i, fileName, focus)
+                  }}
+                  onReset={cb}
+                >
+                  {children}
+                </LinkableSection>
+              </ScrollerStep>
+            )
+          })}
         </Scroller>
       </div>
-      <div className="ch-scrollycoding-sticker" ref={ref}>
+      <div
+        className="ch-scrollycoding-sticker"
+        ref={ref}
+        style={stickerStyle}
+      >
         <InnerCode
           editorStep={tab}
           globalConfig={globalConfig}
@@ -303,6 +309,7 @@ function DynamicScrollycoding({
   )
 }
 
+/*
 import { useEffect, useRef, useState } from "react"
 
 import type { CSSProperties, RefObject } from "react"
@@ -429,3 +436,4 @@ function extractSize(
     : // @ts-ignore Support Firefox's non-standard behavior
       (entry[box][sizeType] as number)
 }
+*/

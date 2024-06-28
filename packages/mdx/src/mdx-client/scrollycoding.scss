@@ -3,12 +3,12 @@
   position: relative;
   margin: 1rem 0;
   gap: 1rem;
-  overflow-y: auto;
 }
 
 .ch-scrollycoding-content {
   box-sizing: border-box;
   flex: 1;
+  width: var(--ch-scrollycoding-content-width, 300px);
 }
 
 .ch-scrollycoding-step-content {
